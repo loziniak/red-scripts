@@ -109,7 +109,7 @@ login: function [
 ]
 
 
-scrap-group-into: function [
+scrape-group-into: function [
 	users-blk [block!]
 	grp-name [integer! word!]
 	/extern
@@ -417,7 +417,7 @@ add-tokens: copy []
 foreach group frequency-grades [
 	append users reduce [
 		access group
-		scrap-group-into
+		scrape-group-into
 			copy []
 			group
 	]
