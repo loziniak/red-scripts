@@ -1,7 +1,7 @@
 Red [
 	Description: {Script to sort contacts in Friendica groups by frequency of posting}
 	Author: "loziniak@o2.pl"
-	Dependency: https://github.com/loziniak/safenet.red/blob/master/http.red
+	Dependency: https://github.com/loziniak/red-scripts.red/blob/master/http.red
 	File: %friendica-regroup.red
 	License: BSD-3
 ]
