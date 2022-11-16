@@ -29,7 +29,10 @@ parser: object [
 
 	name: ["^"" copy n [any name-char] "^""]
 
-	string: [copy p ["^"" any ["\^"" | string-char] "^""] (replace/all p "\^"" "\^^^"")]
+	string: [copy p ["^"" any ["\^"" | string-char] "^""] (
+		replace/all p "^^" "^^^^"
+		replace/all p "\^"" {^"}
+	)]
 
 	primitive: [string | [copy p some val-char]]
 
