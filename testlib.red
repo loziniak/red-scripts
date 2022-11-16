@@ -21,6 +21,22 @@ context [
 
 	sandbox!: context [
 	
+		assert: function [
+			code [block!]
+		] [
+			res: last results
+
+			result: do code
+			either result = true [
+				res/status: 'pass
+			] [
+				res/status: 'fail
+				throw/name none 'expect-fail
+			]
+			
+			result
+		]
+	
 		expect: function [
 			expectation
 			code [block!]
@@ -144,7 +160,13 @@ context [
 					switch result/status [
 						pass	["✓"]
 						fail	[rejoin [
-								{FAILED. Expected: } result/expected {, but got } result/actual
+								{FAILED.}
+								either 'expected = find result 'expected [rejoin [
+									{ Expected: } result/expected
+									either 'actual = find result 'actual [rejoin [
+										{, but got } result/actual
+									]] []
+								]] []
 								newline
 								result/output
 							]]
