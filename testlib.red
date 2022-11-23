@@ -23,38 +23,40 @@ context [
 	
 		assert: function [
 			code [block!]
+			/local result
 		] [
 			res: last results
 
-			result: do code
-			either result = true [
+			set/any 'result do code
+			either :result = true [
 				res/status: 'pass
 			] [
 				res/status: 'fail
 				throw/name none 'expect-fail
 			]
 			
-			result
+			:result
 		]
 	
 		expect: function [
-			expectation
+			expectation [any-type!]
 			code [block!]
+			/local result
 		] [
 			res: last results
-			res/expected: expectation
+			res/expected: :expectation
 
-			result: do code
-			res/actual: result
+			set/any 'result do code
+			res/actual: :result
 		
-			either result = expectation [
+			either :result = :expectation [
 				res/status: 'pass
 			] [
 				res/status: 'fail
 				throw/name none 'expect-fail
 			]
 			
-			result
+			:result
 		]
 
 		expect-error: function [
@@ -62,21 +64,22 @@ context [
 			code	[block!]
 			/message
 				msg	[string!]
+			/local result result-or-error
 		] [
 			returned-error?: no
-			result-or-error: try [
-				result: do code
+			set/any 'result-or-error try [
+				set/any 'result do code
 				returned-error?: yes
-				result
+				:result
 			]
 
 			res: last results
-			res/actual: result-or-error
+			res/actual: :result-or-error
 			res/expected: compose [type: (type)]
 			if message [append res/expected compose [id: 'message arg1: (msg)]]
 			
 			either all [
-				error? result-or-error
+				error? :result-or-error
 				not returned-error?
 				result-or-error/type = type
 				any [
@@ -93,7 +96,7 @@ context [
 				throw/name none 'expect-fail
 			]
 			
-			result-or-error
+			:result-or-error
 		]
 	]
 
