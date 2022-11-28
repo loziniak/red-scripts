@@ -106,9 +106,13 @@ context [
 		/extern
 			tested
 	] [
-		append results result: make map! compose [
-			summary: (summary)
-			status: none
+		append results result: make map! compose/only [
+			summary: (summary)				;@@ [string!]
+			test-code: (copy code)			;@@ [block!]
+			status: none					;@@ [word!] : 'pass | 'fail | 'error | 'ignored
+			;-- expected					(optional field)
+			;-- actual						(optional field)
+			;-- output						(optional field)
 		]
 	
 		either any [
@@ -164,9 +168,9 @@ context [
 						pass	["✓"]
 						fail	[rejoin [
 								{FAILED.}
-								either 'expected = find result 'expected [rejoin [
+								either find result 'expected [rejoin [
 									{ Expected: } result/expected
-									either 'actual = find result 'actual [rejoin [
+									either find result 'actual [rejoin [
 										{, but got } result/actual
 									]] []
 								]] []
