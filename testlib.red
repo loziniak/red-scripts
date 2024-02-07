@@ -1,5 +1,35 @@
 Red [
-	description: {Unit testing library}
+	description: {
+		Unit testing library
+		
+		It tests entire files, creating a clean context for them plus
+		injecting `assert`, `expect` and `expect-error` functions. Then,
+		test cases are added with description and test code, which should
+		include one of mentioned functions. Output is captured. Test results
+		can be printed out, or retrieved as a map. You can limit number
+		of tests performed, the rest is ignored.
+		
+		Usage:
+		
+		Red []
+		#include %testlib.red
+		test-init/limit %tested-script.red 5  ; execute first 5 tests
+		test "Tested function returns string" [
+			expected-argument: 123
+			expect string! [type? tested-function expected-argument]
+		]
+		test "We live in a sane world" [
+			print "This output will be captured."
+			assert [1 + 1 = 2]
+			expect-error 'math [1 / 0]
+		]
+		test "Tested function gives error on none!" [
+			illegal-argument: none
+			expect-error 'script [tested-function illegal-argument]
+		]
+		probe test-results
+		test-results/print
+	}
 	author: "loziniak"
 ]
 
@@ -8,9 +38,10 @@ context [
 	tested: ignore-after: test-file: results: output: none
 	
 	set 'test-init function [
-		file	[file!]
+		"Initializes the testlib for a tested file."
+		file	[file!]		"File being tested. It's executed in isolated, clean context, only with assert, expect and expect-error functions."
 		/limit
-			ia	[integer!]
+			ia	[integer!]	"All tests are ignored after this number"
 	] [
 		self/tested: 0
 		self/ignore-after: either limit [ia] [none]
@@ -22,6 +53,7 @@ context [
 	sandbox!: context [
 	
 		assert: function [
+			"Check if the code resolves to true."
 			code [block!]
 			/local result
 		] [
@@ -39,6 +71,7 @@ context [
 		]
 	
 		expect: function [
+			"Check if the code resolves to expected value."
 			expectation [any-type!]
 			code [block!]
 			/local result
@@ -60,10 +93,11 @@ context [
 		]
 
 		expect-error: function [
-			type	[word!]
+			"Checks if the code results in an error of expected type, optionally also a specific message."
+			type	[word!]		"Expected type, like 'user or 'math"
 			code	[block!]
 			/message
-				msg	[string!]
+				msg	[string!]	"Optional message check. Type has to be 'user"
 			/local result result-or-error
 		] [
 			returned-error?: no
@@ -101,8 +135,9 @@ context [
 	]
 
 	set 'test function [
-		summary [string!]
-		code [block!]
+		"Executes a test in isolated context."
+		summary [string!]	"Text describing what's tested"
+		code [block!]		"Code to run, containing assert, expect and expect-error functions invocations"
 		/extern
 			tested
 	] [
@@ -154,15 +189,17 @@ context [
 		]
 
 		tested: tested + 1
+		()
 	]
 	
 	set 'test-results function [
-		/print
+		"Returns a block of all tests results as maps. Map's keys: summary, test-code, status, expected, actual, output."
+		/print		"Print a summary instead"
 	] [
 		either print [
 			foreach result self/results [
 				system/words/print rejoin [
-					pad/with result/summary 40 #"."
+					pad/with copy result/summary 40 #"."
 					"... "
 					switch result/status [
 						pass	["✓"]
